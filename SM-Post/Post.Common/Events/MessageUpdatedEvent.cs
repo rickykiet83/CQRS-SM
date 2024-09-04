@@ -1,6 +1,5 @@
 namespace Post.Common.Events;
 
-public class MessageUpdatedEvent() : BaseEvent(nameof(MessageUpdatedEvent))
+public record MessageUpdatedEvent(Guid Id, string Message) : BaseEvent(nameof(MessageUpdatedEvent))
 {
-    public string Message { get; set; }
 }

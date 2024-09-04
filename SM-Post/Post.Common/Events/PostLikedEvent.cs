@@ -1,5 +1,5 @@
 namespace Post.Common.Events;
 
-public class PostLikedEvent() : BaseEvent(nameof(PostLikedEvent))
+public record PostLikedEvent(Guid id) : BaseEvent(nameof(PostLikedEvent))
 {
 }

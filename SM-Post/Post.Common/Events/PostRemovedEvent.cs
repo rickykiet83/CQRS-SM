@@ -1,5 +1,5 @@
 namespace Post.Common.Events;
 
-public class PostRemovedEvent() : BaseEvent(nameof(PostRemovedEvent))
+public record PostRemovedEvent() : BaseEvent(nameof(PostRemovedEvent))
 {
 }

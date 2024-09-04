@@ -1,6 +1,6 @@
 namespace Post.Common.Events;
 
-public class CommentAddedEvent() : BaseEvent(nameof(CommentAddedEvent))
+public record CommentAddedEvent() : BaseEvent(nameof(CommentAddedEvent))
 {
     public Guid CommentId { get; set; }
     public string Comment { get; set; }

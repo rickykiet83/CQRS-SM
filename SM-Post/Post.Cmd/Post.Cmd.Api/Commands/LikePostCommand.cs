@@ -1,6 +1,6 @@
 namespace Post.Cmd.Api.Commands;
 
-public class LikePostCommand : BaseCommand
+public record LikePostCommand : BaseCommand
 {
     
 }
