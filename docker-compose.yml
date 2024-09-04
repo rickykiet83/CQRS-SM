@@ -1,0 +1,63 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    platform: linux/amd64
+    restart: always
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "Password123"
+      ACCEPT_EULA: "Y"
+    volumes:
+      - "sqlserver_data:/var/opt/mssql"
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - "mongo_data:/data/db"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+  
+  zookeeper:
+    image: docker.io/bitnami/zookeeper
+    container_name: zookeeper
+    restart: always
+    ports:
+      - "2181:2181"
+    volumes:
+      - "zookeeper_data:/bitnami"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+  kafka:
+    image: docker.io/bitnami/kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    restart: always
+    volumes:
+      - "kafka_data:/bitnami"
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+    depends_on:
+      - zookeeper
+
+volumes:
+  zookeeper_data:
+    driver: local
+  kafka_data:
+    driver: local
+  mongo_data:
+    driver: local
+  sqlserver_data:
+    driver: local
+
