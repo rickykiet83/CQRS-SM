@@ -1,0 +1,1 @@
+global using CQRS.Core.Events;
