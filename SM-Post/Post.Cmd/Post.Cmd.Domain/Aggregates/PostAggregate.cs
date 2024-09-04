@@ -17,9 +17,8 @@ public class PostAggregate : AggregateRoot
 
     public PostAggregate()
     {
-        
     }
-    
+
     public PostAggregate(Guid id, string author, string message)
     {
         RaiseEvent(new PostCreatedEvent
@@ -42,13 +41,14 @@ public class PostAggregate : AggregateRoot
     {
         if (_active)
             throw new InvalidOperationException("You can't edit a message of an inactive post.");
-        
-        if (string.IsNullOrWhiteSpace(message))
-            throw new InvalidOperationException($"The value of {nameof(message)} can't be null or empty. Please provide a valid {nameof(message)}.");
 
-        RaiseEvent(new MessageUpdatedEvent(_id, message));
+        if (string.IsNullOrWhiteSpace(message))
+            throw new InvalidOperationException(
+                $"The value of {nameof(message)} can't be null or empty. Please provide a valid {nameof(message)}.");
+
+        RaiseEvent(new MessageUpdatedEvent(message) { Id = _id });
     }
-    
+
     public void Apply(MessageUpdatedEvent @event)
     {
         _id = @event.Id;
@@ -58,25 +58,27 @@ public class PostAggregate : AggregateRoot
     {
         if (_active)
             throw new InvalidOperationException("You can't like an inactive post.");
-        
-        RaiseEvent(new PostLikedEvent(_id));
+
+        RaiseEvent(new PostLikedEvent { Id = _id });
     }
-    
+
     public void Apply(PostLikedEvent @event)
     {
         _id = @event.Id;
     }
-    
+
     public void AddComment(string comment, string username)
     {
         if (_active)
             throw new InvalidOperationException("You can't add a comment to an inactive post.");
-        
+
         if (string.IsNullOrWhiteSpace(username))
-            throw new InvalidOperationException($"The value of {nameof(username)} can't be null or empty. Please provide a valid {nameof(username)}.");
-        
+            throw new InvalidOperationException(
+                $"The value of {nameof(username)} can't be null or empty. Please provide a valid {nameof(username)}.");
+
         if (string.IsNullOrWhiteSpace(comment))
-            throw new InvalidOperationException($"The value of {nameof(comment)} can't be null or empty. Please provide a valid {nameof(comment)}.");
+            throw new InvalidOperationException(
+                $"The value of {nameof(comment)} can't be null or empty. Please provide a valid {nameof(comment)}.");
 
         RaiseEvent(new CommentAddedEvent
         {
@@ -86,9 +88,70 @@ public class PostAggregate : AggregateRoot
             CommentDate = DateTime.UtcNow,
         });
     }
-    
+
     public void Apply(CommentAddedEvent @event)
     {
         _comments.Add(@event.CommentId, new Tuple<string, string>(@event.Comment, @event.Username));
+    }
+
+    public void EditComment(Guid commentId, string comment, string username)
+    {
+        if (_active)
+            throw new InvalidOperationException("You can't edit a comment of an inactive post.");
+
+        if (string.IsNullOrWhiteSpace(comment))
+            throw new InvalidOperationException(
+                $"The value of {nameof(comment)} can't be null or empty. Please provide a valid {nameof(comment)}.");
+
+        if (!_comments[commentId].Item2.Equals(username, StringComparison.CurrentCultureIgnoreCase))
+            throw new InvalidOperationException("You can't edit a comment that you didn't create.");
+
+        RaiseEvent(new CommentUpdatedEvent
+        {
+            CommentId = commentId,
+            Comment = comment,
+            Username = username,
+            EditDate = DateTime.UtcNow,
+        });
+    }
+
+    public void Apply(CommentUpdatedEvent @event)
+    {
+        _id = @event.Id;
+        _comments[@event.CommentId] = new Tuple<string, string>(@event.Comment, @event.Username);
+    }
+
+    public void RemoveComment(Guid commentId, string username)
+    {
+        if (_active)
+            throw new InvalidOperationException("You can't remove a comment of an inactive post.");
+
+        if (!_comments[commentId].Item2.Equals(username, StringComparison.CurrentCultureIgnoreCase))
+            throw new InvalidOperationException("You can't remove a comment that you didn't create.");
+
+        RaiseEvent(new CommentRemovedEvent(commentId) { Id = _id });
+    }
+
+    public void Apply(CommentRemovedEvent @event)
+    {
+        _id = @event.Id;
+        _comments.Remove(@event.CommentId);
+    }
+
+    public void DeletePost(string username)
+    {
+        if (_active)
+            throw new InvalidOperationException("You can't delete an inactive post.");
+
+        if (_author.Equals(username, StringComparison.CurrentCultureIgnoreCase))
+            throw new InvalidOperationException("You can't delete a post that you didn't create.");
+
+        RaiseEvent(new PostRemovedEvent { Id = _id });
+    }
+    
+    public void Apply(PostRemovedEvent @event)
+    {
+        _id = @event.Id;
+        _active = false;
     }
 }
