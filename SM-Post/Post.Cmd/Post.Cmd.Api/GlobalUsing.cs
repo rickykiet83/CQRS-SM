@@ -7,3 +7,7 @@ global using Post.Cmd.Infrastructure.Config;
 global using Post.Cmd.Infrastructure.Handlers;
 global using Post.Cmd.Infrastructure.Repositories;
 global using Post.Cmd.Infrastructure.Stores;
+global using Post.Cmd.Api.Commands;
+global using Confluent.Kafka;
+global using Post.Cmd.Infrastructure.Dispatchers;
+global using CQRS.Core.Producers;
