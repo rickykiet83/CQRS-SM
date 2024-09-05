@@ -1,1 +1,9 @@
 global using CQRS.Core.Commands;
+global using CQRS.Core.Domain;
+global using CQRS.Core.Handlers;
+global using CQRS.Core.Infrastructure;
+global using Post.Cmd.Domain.Aggregates;
+global using Post.Cmd.Infrastructure.Config;
+global using Post.Cmd.Infrastructure.Handlers;
+global using Post.Cmd.Infrastructure.Repositories;
+global using Post.Cmd.Infrastructure.Stores;
