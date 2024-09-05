@@ -7,7 +7,7 @@ namespace Post.Query.Infrastructure.Repositories;
 
 public class PostRepository(DatabaseContextFactory contextFactory) : IPostRepository
 {
-    public async Task CreateAsync(PostEntity post)
+    public async Task CreateAsync(PostEntity? post)
     {
         await using DatabaseContext context = contextFactory.CreateDbContext();
         context.Posts.Add(post);
@@ -35,7 +35,7 @@ public class PostRepository(DatabaseContextFactory contextFactory) : IPostReposi
             .ToListAsync();
     }
 
-    public async Task<PostEntity> GetByIdAsync(Guid postId)
+    public async Task<PostEntity?> GetByIdAsync(Guid postId)
     {
         await using DatabaseContext context = contextFactory.CreateDbContext();
         return await context.Posts
@@ -69,7 +69,7 @@ public class PostRepository(DatabaseContextFactory contextFactory) : IPostReposi
             .ToListAsync();
     }
 
-    public async Task UpdateAsync(PostEntity post)
+    public async Task UpdateAsync(PostEntity? post)
     {
         await using DatabaseContext context = contextFactory.CreateDbContext();
         context.Posts.Update(post);
