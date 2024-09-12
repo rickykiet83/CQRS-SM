@@ -38,6 +38,14 @@ public class EventHandler(IPostRepository postRepository, ICommentRepository com
         await postRepository.UpdateAsync(post);
     }
 
+    public async Task On(PostRemovedEvent @event)
+    {
+        var post = await postRepository.GetByIdAsync(@event.Id);
+        if (post is null) return;
+        
+        await postRepository.DeleteAsync(post.PostId);
+    }
+
     public async Task On(CommentAddedEvent @event)
     {
         var post = await postRepository.GetByIdAsync(@event.Id);

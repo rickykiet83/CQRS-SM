@@ -10,4 +10,5 @@ public interface IEventHandler
     Task On(CommentAddedEvent @event);
     Task On(CommentUpdatedEvent @event);
     Task On(CommentRemovedEvent @event);
+    Task On(PostRemovedEvent @event);
 }

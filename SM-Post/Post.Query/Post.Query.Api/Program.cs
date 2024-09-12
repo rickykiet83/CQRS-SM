@@ -6,7 +6,6 @@ using Post.Query.Infrastructure.Consumers;
 using Post.Query.Infrastructure.DataAccess;
 using Post.Query.Infrastructure.Handlers;
 using Post.Query.Infrastructure.Repositories;
-using EventHandler = Post.Query.Infrastructure.Handlers.EventHandler;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +28,7 @@ dataContext.Database.Migrate();
 
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
-builder.Services.AddScoped<IEventHandler, EventHandler>();
+builder.Services.AddScoped<IEventHandler, Post.Query.Infrastructure.Handlers.EventHandler>();
 builder.Services.AddScoped<IEventConsumer, EventConsumer>();
 builder.Services.AddHostedService<ConsumerHostedService>(); // Add hosted service to confirm the consumer is running
 

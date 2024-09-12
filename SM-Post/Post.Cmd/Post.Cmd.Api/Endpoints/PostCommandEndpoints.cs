@@ -10,11 +10,11 @@ public static class PostCommandEndpoints
     public static RouteGroupBuilder MapPostCommandEndpoints(this IEndpointRouteBuilder routes)
     {
         var group = routes
-            .MapGroup("/api/posts")
+            .MapGroup("/api/v1")
             .WithParameterValidation()
             .WithTags("Posts");
 
-        group.MapPost("/", async (
+        group.MapPost("/newpost", async (
                 ILogger<RouteGroupBuilder> logger,
                 [FromBody] NewPostCommand command, ICommandDispatcher dispatcher) =>
             {

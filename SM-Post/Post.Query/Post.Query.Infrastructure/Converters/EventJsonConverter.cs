@@ -25,7 +25,7 @@ public class EventJsonConverter : JsonConverter<BaseEvent>
         
         return typeDiscriminator switch
         {
-            nameof(PostCreatedEvent) => JsonSerializer.Deserialize<PostRemovedEvent>(json, options),
+            nameof(PostCreatedEvent) => JsonSerializer.Deserialize<PostCreatedEvent>(json, options),
             nameof(MessageUpdatedEvent) => JsonSerializer.Deserialize<MessageUpdatedEvent>(json, options),
             nameof(PostLikedEvent) => JsonSerializer.Deserialize<PostLikedEvent>(json, options),
             nameof(PostRemovedEvent) => JsonSerializer.Deserialize<PostRemovedEvent>(json, options),
