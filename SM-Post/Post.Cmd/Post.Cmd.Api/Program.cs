@@ -1,3 +1,5 @@
+using Post.Cmd.Api.Endpoints;
+using Post.Cmd.Api.ErrorHandling;
 using Post.Cmd.Infrastructure.Producers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,6 +30,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+app.UseExceptionHandler(handlerApp => handlerApp.ConfigureExceptionHandler());
+
+app.MapPostCommandEndpoints();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
