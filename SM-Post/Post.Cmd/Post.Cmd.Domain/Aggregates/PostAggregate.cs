@@ -56,7 +56,7 @@ public class PostAggregate : AggregateRoot
 
     public void LikePost()
     {
-        if (_active)
+        if (!_active)
             throw new InvalidOperationException("You can't like an inactive post.");
 
         RaiseEvent(new PostLikedEvent { Id = _id });
