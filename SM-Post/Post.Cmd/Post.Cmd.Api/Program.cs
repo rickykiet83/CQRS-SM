@@ -1,8 +1,20 @@
+using CQRS.Core.Events;
+using MongoDB.Bson.Serialization;
 using Post.Cmd.Api.Endpoints;
 using Post.Cmd.Api.ErrorHandling;
 using Post.Cmd.Infrastructure.Producers;
+using Post.Common.Events;
 
 var builder = WebApplication.CreateBuilder(args);
+
+BsonClassMap.RegisterClassMap<BaseEvent>();
+BsonClassMap.RegisterClassMap<PostCreatedEvent>();
+BsonClassMap.RegisterClassMap<MessageUpdatedEvent>();
+BsonClassMap.RegisterClassMap<PostLikedEvent>();
+BsonClassMap.RegisterClassMap<PostRemovedEvent>();
+BsonClassMap.RegisterClassMap<CommentAddedEvent>();
+BsonClassMap.RegisterClassMap<CommentRemovedEvent>();
+BsonClassMap.RegisterClassMap<CommentUpdatedEvent>();
 
 // Add services to the container.
 builder.Services.Configure<MongoDbConfig>(builder.Configuration.GetSection(nameof(MongoDbConfig)));
@@ -32,7 +44,8 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 app.UseExceptionHandler(handlerApp => handlerApp.ConfigureExceptionHandler());
 
-app.MapPostCommandEndpoints();
+app.MapPostEndpoints();
+app.MapMessageEndpoints();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

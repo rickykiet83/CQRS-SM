@@ -7,10 +7,10 @@ namespace Post.Cmd.Api.Endpoints;
 
 public static class PostCommandEndpoints
 {
-    public static RouteGroupBuilder MapPostCommandEndpoints(this IEndpointRouteBuilder routes)
+    public static RouteGroupBuilder MapPostEndpoints(this IEndpointRouteBuilder routes)
     {
         var group = routes
-            .MapGroup("/api/v1")
+            .MapGroup("/api/v1/posts")
             .WithParameterValidation()
             .WithTags("Posts");
 
@@ -37,7 +37,7 @@ public static class PostCommandEndpoints
             })
             .WithSummary("Creates a new post")
             .WithDescription("Creates a new post with the specified details")
-            .Produces(StatusCodes.Status201Created)
+            .Produces<NewPostResponse>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             ;
 

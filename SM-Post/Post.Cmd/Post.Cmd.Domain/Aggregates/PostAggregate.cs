@@ -39,7 +39,7 @@ public class PostAggregate : AggregateRoot
 
     public void EditMessage(string message)
     {
-        if (_active)
+        if (!_active)
             throw new InvalidOperationException("You can't edit a message of an inactive post.");
 
         if (string.IsNullOrWhiteSpace(message))
