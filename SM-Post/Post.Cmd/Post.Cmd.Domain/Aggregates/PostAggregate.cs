@@ -69,7 +69,7 @@ public class PostAggregate : AggregateRoot
 
     public void AddComment(string comment, string username)
     {
-        if (_active)
+        if (!_active)
             throw new InvalidOperationException("You can't add a comment to an inactive post.");
 
         if (string.IsNullOrWhiteSpace(username))
@@ -82,6 +82,7 @@ public class PostAggregate : AggregateRoot
 
         RaiseEvent(new CommentAddedEvent
         {
+            Id = _id,
             CommentId = Guid.NewGuid(),
             Comment = comment,
             Username = username,

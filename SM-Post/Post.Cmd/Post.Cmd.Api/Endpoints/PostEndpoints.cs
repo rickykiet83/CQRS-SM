@@ -2,7 +2,7 @@ using CQRS.Core.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Post.Cmd.Api.DTOs;
 using Post.Common.DTOs;
-using Zip.WebAPI.Exceptions;
+using Post.Common.Exceptions;
 
 namespace Post.Cmd.Api.Endpoints;
 
@@ -73,6 +73,40 @@ public static class PostEndpoints
             .WithDescription("Likes a post with the specified details")
             .Produces<BaseResponse>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest);
+        
+        group.MapPost("/{id:guid}/comments", async (
+                Guid id,
+                ILogger<RouteGroupBuilder> logger,
+                [FromBody] AddCommentCommand command, ICommandDispatcher dispatcher) =>
+            {
+                try
+                {
+                    command.Id = id;
+                    await dispatcher.SendAsync(command);
+                    return Results.Created("",
+                        new BaseResponse{ Message = "New comment creation request completed successfully" });
+                }
+                catch (InvalidOperationException ex)
+                {
+                    logger.Log(LogLevel.Warning, ex, "Error creating new comment");
+                    throw new BadRequestException("Error creating new comment", ex.Message);
+                }
+                catch (AggregateNotFoundException ex)
+                {
+                    logger.Log(LogLevel.Warning, ex, "No post found");
+                    throw new BadRequestException("Error No post found", ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    logger.Log(LogLevel.Error, ex, "Error creating new comment");
+                    throw new InternalServerException("Error creating new comment", ex.Message);
+                }
+            })
+            .WithSummary("Creates a new comment")
+            .WithDescription("Creates a new comment with the specified details")
+            .Produces<BaseResponse>(StatusCodes.Status201Created)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            ;
 
         return group;
     }

@@ -1,6 +1,6 @@
 using CQRS.Core.Exceptions;
 using Post.Common.DTOs;
-using Zip.WebAPI.Exceptions;
+using Post.Common.Exceptions;
 
 namespace Post.Cmd.Api.Endpoints;
 

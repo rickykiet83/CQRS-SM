@@ -1,4 +1,4 @@
-namespace Zip.WebAPI.Exceptions;
+namespace Post.Common.Exceptions;
 
 public class BadRequestException: Exception
 {

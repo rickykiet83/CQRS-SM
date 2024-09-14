@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Zip.WebAPI.Exceptions;
+using Post.Common.Exceptions;
 
 namespace Post.Cmd.Api.ErrorHandling;
 
