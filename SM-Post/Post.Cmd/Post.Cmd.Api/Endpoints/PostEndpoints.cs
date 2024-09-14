@@ -141,6 +141,40 @@ public static class PostEndpoints
         .WithDescription("Edit a comment with the specified details")
         .Produces<BaseResponse>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status400BadRequest);
+
+        group.MapDelete("/{id:guid}/comments/{commentId:guid}", async (
+            Guid id,
+            Guid commentId,
+            ILogger<RouteGroupBuilder> logger,
+            [FromBody] RemoveCommentCommand command, ICommandDispatcher dispatcher) =>
+        {
+            try
+            {
+                command.Id = id;
+                command.CommentId = commentId;
+                await dispatcher.SendAsync(command);
+                return Results.Ok(
+                    new BaseResponse{ Message = "Remove comment successfully" });
+            }
+            catch (InvalidOperationException ex)
+            {
+                logger.Log(LogLevel.Warning, ex, "Error Remove comment");
+                throw new BadRequestException("Error Remove comment", ex.Message);
+            }
+            catch (AggregateNotFoundException ex)
+            {
+                logger.Log(LogLevel.Warning, ex, "No post or comment found");
+                throw new NotFoundException("No post or comment", ex.Message);
+            }
+            catch (Exception ex)
+            {
+                logger.Log(LogLevel.Error, ex, "Error Remove comment");
+                throw new InternalServerException("Error Remove comment", ex.Message);
+            }
+        }).WithSummary("Remove a comment")
+        .WithDescription("Remove a comment with the specified details")
+        .Produces<BaseResponse>(StatusCodes.Status200OK)
+        .ProducesProblem(StatusCodes.Status400BadRequest);
         
         return group;
     }
