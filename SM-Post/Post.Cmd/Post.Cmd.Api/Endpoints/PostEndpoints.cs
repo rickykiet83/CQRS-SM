@@ -15,7 +15,7 @@ public static class PostEndpoints
             .WithParameterValidation()
             .WithTags("Posts");
 
-        group.MapPost("/newpost", async (
+        group.MapPost("/", async (
                 ILogger<RouteGroupBuilder> logger,
                 [FromBody] NewPostCommand command, ICommandDispatcher dispatcher) =>
             {
@@ -61,7 +61,7 @@ public static class PostEndpoints
                 catch (AggregateNotFoundException ex)
                 {
                     logger.Log(LogLevel.Warning, ex, "No post found");
-                    throw new BadRequestException("Error No post found", ex.Message);
+                    throw new NotFoundException("Error No post found", ex.Message);
                 }
                 catch (Exception ex)
                 {
@@ -94,7 +94,7 @@ public static class PostEndpoints
                 catch (AggregateNotFoundException ex)
                 {
                     logger.Log(LogLevel.Warning, ex, "No post found");
-                    throw new BadRequestException("Error No post found", ex.Message);
+                    throw new NotFoundException("Error No post found", ex.Message);
                 }
                 catch (Exception ex)
                 {
@@ -108,6 +108,40 @@ public static class PostEndpoints
             .ProducesProblem(StatusCodes.Status400BadRequest)
             ;
 
+        group.MapPut("/{id:guid}/comments/{commentId:guid}", async (
+            Guid id,
+            Guid commentId,
+            ILogger<RouteGroupBuilder> logger,
+            [FromBody] EditCommentCommand command, ICommandDispatcher dispatcher) =>
+        {
+            try
+            {
+                command.Id = id;
+                command.CommentId = commentId;
+                await dispatcher.SendAsync(command);
+                return Results.Ok(
+                    new BaseResponse{ Message = "Edit comment successfully" });
+            }
+            catch (InvalidOperationException ex)
+            {
+                logger.Log(LogLevel.Warning, ex, "Error Edit comment");
+                throw new BadRequestException("Error Edit comment", ex.Message);
+            }
+            catch (AggregateNotFoundException ex)
+            {
+                logger.Log(LogLevel.Warning, ex, "No post or comment found");
+                throw new NotFoundException("No post or comment", ex.Message);
+            }
+            catch (Exception ex)
+            {
+                logger.Log(LogLevel.Error, ex, "Error Edit comment");
+                throw new InternalServerException("Error Edit comment", ex.Message);
+            }
+        }).WithSummary("Edit a comment")
+        .WithDescription("Edit a comment with the specified details")
+        .Produces<BaseResponse>(StatusCodes.Status200OK)
+        .ProducesProblem(StatusCodes.Status400BadRequest);
+        
         return group;
     }
 }

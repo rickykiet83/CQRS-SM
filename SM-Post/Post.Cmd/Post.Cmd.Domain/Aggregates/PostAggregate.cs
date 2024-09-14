@@ -92,12 +92,16 @@ public class PostAggregate : AggregateRoot
 
     public void Apply(CommentAddedEvent @event)
     {
+        if (_comments.ContainsKey(@event.CommentId))
+            return;
+        
+        _id = @event.Id;
         _comments.Add(@event.CommentId, new Tuple<string, string>(@event.Comment, @event.Username));
     }
 
     public void EditComment(Guid commentId, string comment, string username)
     {
-        if (_active)
+        if (!_active)
             throw new InvalidOperationException("You can't edit a comment of an inactive post.");
 
         if (string.IsNullOrWhiteSpace(comment))
@@ -109,6 +113,7 @@ public class PostAggregate : AggregateRoot
 
         RaiseEvent(new CommentUpdatedEvent
         {
+            Id = _id,
             CommentId = commentId,
             Comment = comment,
             Username = username,
@@ -124,7 +129,7 @@ public class PostAggregate : AggregateRoot
 
     public void RemoveComment(Guid commentId, string username)
     {
-        if (_active)
+        if (!_active)
             throw new InvalidOperationException("You can't remove a comment of an inactive post.");
 
         if (!_comments[commentId].Item2.Equals(username, StringComparison.CurrentCultureIgnoreCase))
@@ -141,7 +146,7 @@ public class PostAggregate : AggregateRoot
 
     public void DeletePost(string username)
     {
-        if (_active)
+        if (!_active)
             throw new InvalidOperationException("You can't delete an inactive post.");
 
         if (_author.Equals(username, StringComparison.CurrentCultureIgnoreCase))
