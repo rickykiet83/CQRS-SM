@@ -149,7 +149,7 @@ public class PostAggregate : AggregateRoot
         if (!_active)
             throw new InvalidOperationException("You can't delete an inactive post.");
 
-        if (_author.Equals(username, StringComparison.CurrentCultureIgnoreCase))
+        if (!_author.Equals(username, StringComparison.CurrentCultureIgnoreCase))
             throw new InvalidOperationException("You can't delete a post that you didn't create.");
 
         RaiseEvent(new PostRemovedEvent { Id = _id });

@@ -43,6 +43,22 @@ public static class PostEndpoints
             .ProducesProblem(StatusCodes.Status400BadRequest)
             ;
 
+        group.MapDelete("/{id:guid}", async (
+                Guid id,
+                [FromBody] DeletePostCommand command,
+                ILogger<RouteGroupBuilder> logger,
+                
+                ICommandDispatcher dispatcher
+            ) =>
+            {
+                command.Id = id;
+                await dispatcher.SendAsync(command);
+                return Results.Ok(new BaseResponse {Message = "Post deleted successfully"});
+            }).WithSummary("Delete a post")
+            .WithDescription("Delete a post with the specified details")
+            .Produces<BaseResponse>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status400BadRequest);
+
         group.MapPut("/{id:guid}/like", async (
                 Guid id,
                 ILogger<RouteGroupBuilder> logger,
@@ -73,7 +89,7 @@ public static class PostEndpoints
             .WithDescription("Likes a post with the specified details")
             .Produces<BaseResponse>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest);
-        
+
         group.MapPost("/{id:guid}/comments", async (
                 Guid id,
                 ILogger<RouteGroupBuilder> logger,
@@ -84,7 +100,7 @@ public static class PostEndpoints
                     command.Id = id;
                     await dispatcher.SendAsync(command);
                     return Results.Created("",
-                        new BaseResponse{ Message = "New comment creation request completed successfully" });
+                        new BaseResponse { Message = "New comment creation request completed successfully" });
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -109,73 +125,74 @@ public static class PostEndpoints
             ;
 
         group.MapPut("/{id:guid}/comments/{commentId:guid}", async (
-            Guid id,
-            Guid commentId,
-            ILogger<RouteGroupBuilder> logger,
-            [FromBody] EditCommentCommand command, ICommandDispatcher dispatcher) =>
-        {
-            try
+                Guid id,
+                Guid commentId,
+                ILogger<RouteGroupBuilder> logger,
+                [FromBody] EditCommentCommand command, ICommandDispatcher dispatcher) =>
             {
-                command.Id = id;
-                command.CommentId = commentId;
-                await dispatcher.SendAsync(command);
-                return Results.Ok(
-                    new BaseResponse{ Message = "Edit comment successfully" });
-            }
-            catch (InvalidOperationException ex)
-            {
-                logger.Log(LogLevel.Warning, ex, "Error Edit comment");
-                throw new BadRequestException("Error Edit comment", ex.Message);
-            }
-            catch (AggregateNotFoundException ex)
-            {
-                logger.Log(LogLevel.Warning, ex, "No post or comment found");
-                throw new NotFoundException("No post or comment", ex.Message);
-            }
-            catch (Exception ex)
-            {
-                logger.Log(LogLevel.Error, ex, "Error Edit comment");
-                throw new InternalServerException("Error Edit comment", ex.Message);
-            }
-        }).WithSummary("Edit a comment")
-        .WithDescription("Edit a comment with the specified details")
-        .Produces<BaseResponse>(StatusCodes.Status200OK)
-        .ProducesProblem(StatusCodes.Status400BadRequest);
+                try
+                {
+                    command.Id = id;
+                    command.CommentId = commentId;
+                    await dispatcher.SendAsync(command);
+                    return Results.Ok(
+                        new BaseResponse { Message = "Edit comment successfully" });
+                }
+                catch (InvalidOperationException ex)
+                {
+                    logger.Log(LogLevel.Warning, ex, "Error Edit comment");
+                    throw new BadRequestException("Error Edit comment", ex.Message);
+                }
+                catch (AggregateNotFoundException ex)
+                {
+                    logger.Log(LogLevel.Warning, ex, "No post or comment found");
+                    throw new NotFoundException("No post or comment", ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    logger.Log(LogLevel.Error, ex, "Error Edit comment");
+                    throw new InternalServerException("Error Edit comment", ex.Message);
+                }
+            }).WithSummary("Edit a comment")
+            .WithDescription("Edit a comment with the specified details")
+            .Produces<BaseResponse>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status400BadRequest);
 
         group.MapDelete("/{id:guid}/comments/{commentId:guid}", async (
-            Guid id,
-            Guid commentId,
-            ILogger<RouteGroupBuilder> logger,
-            [FromBody] RemoveCommentCommand command, ICommandDispatcher dispatcher) =>
-        {
-            try
+                Guid id,
+                Guid commentId,
+                ILogger<RouteGroupBuilder> logger,
+                [FromBody] RemoveCommentCommand command, ICommandDispatcher dispatcher) =>
             {
-                command.Id = id;
-                command.CommentId = commentId;
-                await dispatcher.SendAsync(command);
-                return Results.Ok(
-                    new BaseResponse{ Message = "Remove comment successfully" });
-            }
-            catch (InvalidOperationException ex)
-            {
-                logger.Log(LogLevel.Warning, ex, "Error Remove comment");
-                throw new BadRequestException("Error Remove comment", ex.Message);
-            }
-            catch (AggregateNotFoundException ex)
-            {
-                logger.Log(LogLevel.Warning, ex, "No post or comment found");
-                throw new NotFoundException("No post or comment", ex.Message);
-            }
-            catch (Exception ex)
-            {
-                logger.Log(LogLevel.Error, ex, "Error Remove comment");
-                throw new InternalServerException("Error Remove comment", ex.Message);
-            }
-        }).WithSummary("Remove a comment")
-        .WithDescription("Remove a comment with the specified details")
-        .Produces<BaseResponse>(StatusCodes.Status200OK)
-        .ProducesProblem(StatusCodes.Status400BadRequest);
-        
+                try
+                {
+                    command.Id = id;
+                    command.CommentId = commentId;
+                    await dispatcher.SendAsync(command);
+                    return Results.Ok(
+                        new BaseResponse { Message = "Remove comment successfully" });
+                }
+                catch (InvalidOperationException ex)
+                {
+                    logger.Log(LogLevel.Warning, ex, "Error Remove comment");
+                    throw new BadRequestException("Error Remove comment", ex.Message);
+                }
+                catch (AggregateNotFoundException ex)
+                {
+                    logger.Log(LogLevel.Warning, ex, "No post or comment found");
+                    throw new NotFoundException("No post or comment", ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    logger.Log(LogLevel.Error, ex, "Error Remove comment");
+                    throw new InternalServerException("Error Remove comment", ex.Message);
+                }
+            }).WithSummary("Remove a comment")
+            .WithDescription("Remove a comment with the specified details")
+            .Produces<BaseResponse>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status400BadRequest);
+
+
         return group;
     }
 }
