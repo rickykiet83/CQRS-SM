@@ -35,6 +35,7 @@ dispatcher.RegisterHandler<AddCommentCommand>(commandHandler.HandleAsync);
 dispatcher.RegisterHandler<EditCommentCommand>(commandHandler.HandleAsync);
 dispatcher.RegisterHandler<RemoveCommentCommand>(commandHandler.HandleAsync);
 dispatcher.RegisterHandler<DeletePostCommand>(commandHandler.HandleAsync);
+dispatcher.RegisterHandler<RestoreReadDbCommand>(commandHandler.HandleAsync);
 builder.Services.AddSingleton<ICommandDispatcher>(_ => dispatcher);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -46,6 +47,7 @@ app.UseExceptionHandler(handlerApp => handlerApp.ConfigureExceptionHandler());
 
 app.MapPostEndpoints();
 app.MapMessageEndpoints();
+app.MapRestoreReadDbEndpoints();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

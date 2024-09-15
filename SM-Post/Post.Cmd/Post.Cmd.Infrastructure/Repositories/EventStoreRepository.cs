@@ -22,4 +22,10 @@ public class EventStoreRepository(IOptions<MongoDbConfig> config) : IEventStoreR
             .Find(x => x.AggregateIdentifier.Equals(aggregateId))
             .ToListAsync()
             .ConfigureAwait(false);
+
+    public async Task<List<EventModel>> FindAllAsync()
+        => await _eventStoreCollection
+            .Find(_ => true)
+            .ToListAsync()
+            .ConfigureAwait(false);
 }

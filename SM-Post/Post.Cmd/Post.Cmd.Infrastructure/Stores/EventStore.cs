@@ -48,4 +48,16 @@ public class EventStore(IEventStoreRepository eventStoreRepository, IEventProduc
             .Select(x => x.EventData)
             .ToList();
     }
+
+    public async Task<List<Guid>> GetAggregateIdsAsync()
+    {
+        var eventStream = await eventStoreRepository.FindAllAsync();
+        if (eventStream is null || !eventStream.Any())
+            throw new AggregateNotFoundException("No posts found!");
+        
+        return eventStream
+            .Select(x => x.AggregateIdentifier)
+            .Distinct()
+            .ToList();
+    }
 }
