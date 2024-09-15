@@ -17,12 +17,27 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.Configure<ConsumerConfig>(builder.Configuration.GetSection(nameof(ConsumerConfig)));
 
+var connectionString = builder.Configuration.GetConnectionString("Postgres");
+// Action<DbContextOptionsBuilder> configureDbContext = options =>
+// {
+//     options
+//         .UseLazyLoadingProxies(false)
+//         .UseSqlServer(connectionString, sqlOptions =>
+//         {
+//             sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+//         });
+// };
+
 Action<DbContextOptionsBuilder> configureDbContext = options =>
 {
     options
         .UseLazyLoadingProxies(false)
-        .UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"));
+        .UseNpgsql(connectionString, sqlOptions =>
+        {
+            sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+        });
 };
+
 builder.Services.AddDbContext<DatabaseContext>(configureDbContext);
 builder.Services.AddSingleton(new DatabaseContextFactory(configureDbContext));
 

@@ -11,6 +11,18 @@ services:
       ACCEPT_EULA: "Y"
     volumes:
       - "sqlserver_data:/var/opt/mssql"
+  
+  postgres:
+    image: postgres:alpine3.16
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin1234
+      - POSTGRES_DB=SocialMedia
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   mongo:
     image: mongo
@@ -57,5 +69,7 @@ volumes:
   mongo_data:
     driver: local
   sqlserver_data:
+    driver: local
+  postgres_data:
     driver: local
 

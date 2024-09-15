@@ -92,9 +92,6 @@ public class PostAggregate : AggregateRoot
 
     public void Apply(CommentAddedEvent @event)
     {
-        if (_comments.ContainsKey(@event.CommentId))
-            return;
-        
         _id = @event.Id;
         _comments.Add(@event.CommentId, new Tuple<string, string>(@event.Comment, @event.Username));
     }
