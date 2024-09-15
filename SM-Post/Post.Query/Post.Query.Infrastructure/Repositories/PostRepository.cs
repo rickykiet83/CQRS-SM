@@ -47,7 +47,6 @@ public class PostRepository(DatabaseContextFactory contextFactory) : IPostReposi
     {
         await using DatabaseContext context = contextFactory.CreateDbContext();
         return await context.Posts.AsNoTracking()
-            .Include(i => i.Comments).AsNoTracking()
             .ToListAsync();
     }
 

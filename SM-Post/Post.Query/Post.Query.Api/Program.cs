@@ -2,6 +2,7 @@ using Confluent.Kafka;
 using CQRS.Core.Consumers;
 using CQRS.Core.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Post.Query.Api.Endpoints;
 using Post.Query.Api.Queries;
 using Post.Query.Domain.Entities;
 using Post.Query.Domain.Repositories;
@@ -19,7 +20,7 @@ builder.Services.Configure<ConsumerConfig>(builder.Configuration.GetSection(name
 Action<DbContextOptionsBuilder> configureDbContext = options =>
 {
     options
-        .UseLazyLoadingProxies()
+        .UseLazyLoadingProxies(false)
         .UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"));
 };
 builder.Services.AddDbContext<DatabaseContext>(configureDbContext);
@@ -59,6 +60,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.MapPostEndpoints();
 
 app.UseHttpsRedirection();
 
